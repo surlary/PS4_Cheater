@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using librpc;
+using libdebug;
 using System.Threading;
 using System.Globalization;
 using System.Collections;
@@ -44,7 +44,7 @@ namespace PS4_Cheater
 
     public class MemoryHelper
     {
-        public static PS4RPC ps4 = null;
+        public static PS4DBG ps4 = null;
         private static Mutex mutex;
         private int SelfProcessID;
         private int ProcessID {
@@ -67,12 +67,12 @@ namespace PS4_Cheater
             this.DefaultProcessID = defaultProcessID;
         }
 
-        public static bool Connect(string ip, bool is505)
+        public static bool Connect(string ip)
         {
             try
             {
                 mutex.WaitOne();
-                ps4 = new PS4RPC(ip, is505);
+                ps4 = new PS4DBG(ip);
                 ps4.Connect();
                 mutex.ReleaseMutex();
                 return true;
@@ -177,6 +177,23 @@ namespace PS4_Cheater
                 ProcessInfo processInfo = ps4.GetProcessInfo(processID);
                 mutex.ReleaseMutex();
                 return processInfo;
+            }
+            catch
+            {
+                mutex.ReleaseMutex();
+                ProcessInfo info = new ProcessInfo();
+                return info;
+            }
+        }
+        
+        public static ProcessMap GetProcessMaps(int processID)
+        {
+            mutex.WaitOne();
+            try
+            {
+                ProcessMap processMap = ps4.GetProcessMaps(processID);
+                mutex.ReleaseMutex();
+                return processMap;
             }
             catch
             {

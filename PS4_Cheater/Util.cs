@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using System.Configuration;
-using librpc;
+using libdebug;
 using System.Collections.Generic;
 
 namespace PS4_Cheater
@@ -12,17 +12,17 @@ namespace PS4_Cheater
 
     class GameInfo
     {
-        const string GAME_INFO_4_05_PROCESS_NAME = "SceCdlgApp";
-        const string GAME_INFO_4_05_SECTION_NAME = "libSceCdlgUtilServer.sprx";
-        const int GAME_INFO_4_05_SECTION_PROT = 3;
-        const int GAME_INFO_4_05_ID_OFFSET = 0XA0;
-        const int GAME_INFO_4_05_VERSION_OFFSET = 0XC8;
+        const string GAME_INFO_7_02_PROCESS_NAME = "SceCdlgApp";
+        const string GAME_INFO_7_02_SECTION_NAME = "libSceCdlgUtilServer.sprx";
+        const int GAME_INFO_7_02_SECTION_PROT = 3;
+        const int GAME_INFO_7_02_ID_OFFSET = 0XA0;
+        const int GAME_INFO_7_02_VERSION_OFFSET = 0XC8;
 
-        const string GAME_INFO_4_55_PROCESS_NAME = "SceCdlgApp";
-        const string GAME_INFO_4_55_SECTION_NAME = "libSceCdlgUtilServer.sprx";
-        const int GAME_INFO_4_55_SECTION_PROT = 3;
-        const int GAME_INFO_4_55_ID_OFFSET = 0XA0;
-        const int GAME_INFO_4_55_VERSION_OFFSET = 0XC8;
+        const string GAME_INFO_6_72_PROCESS_NAME = "SceCdlgApp";
+        const string GAME_INFO_6_72_SECTION_NAME = "libSceCdlgUtilServer.sprx";
+        const int GAME_INFO_6_72_SECTION_PROT = 3;
+        const int GAME_INFO_6_72_ID_OFFSET = 0XA0;
+        const int GAME_INFO_6_72_VERSION_OFFSET = 0XC8;
 
 		const string GAME_INFO_5_05_PROCESS_NAME = "SceCdlgApp";
         const string GAME_INFO_5_05_SECTION_NAME = "libSceCdlgUtilServer.sprx";
@@ -43,19 +43,19 @@ namespace PS4_Cheater
 
             switch (Util.Version)
             {
-                case 405:
-                    process_name = GAME_INFO_4_05_PROCESS_NAME;
-                    section_name = GAME_INFO_4_05_SECTION_NAME;
-                    id_offset = GAME_INFO_4_05_ID_OFFSET;
-                    version_offset = GAME_INFO_4_05_VERSION_OFFSET;
-                    section_prot = GAME_INFO_4_05_SECTION_PROT;
+                case 702:
+                    process_name = GAME_INFO_7_02_PROCESS_NAME;
+                    section_name = GAME_INFO_7_02_SECTION_NAME;
+                    id_offset = GAME_INFO_7_02_ID_OFFSET;
+                    version_offset = GAME_INFO_7_02_VERSION_OFFSET;
+                    section_prot = GAME_INFO_7_02_SECTION_PROT;
                     break;
-                case 455:
-                    process_name = GAME_INFO_4_55_PROCESS_NAME;
-                    section_name = GAME_INFO_4_55_SECTION_NAME;
-                    id_offset = GAME_INFO_4_55_ID_OFFSET;
-                    version_offset = GAME_INFO_4_55_VERSION_OFFSET;
-                    section_prot = GAME_INFO_4_55_SECTION_PROT;
+                case 672:
+                    process_name = GAME_INFO_6_72_PROCESS_NAME;
+                    section_name = GAME_INFO_6_72_SECTION_NAME;
+                    id_offset = GAME_INFO_6_72_ID_OFFSET;
+                    version_offset = GAME_INFO_6_72_VERSION_OFFSET;
+                    section_prot = GAME_INFO_6_72_SECTION_PROT;
                     break;
 				case 505:
                     process_name = GAME_INFO_5_05_PROCESS_NAME;
@@ -75,7 +75,7 @@ namespace PS4_Cheater
 
                 MemoryHelper memoryHelper = new MemoryHelper(false, processInfo.pid);
                 MappedSectionList mappedSectionList = processManager.MappedSectionList;
-                mappedSectionList.InitMemorySectionList(processInfo);
+                mappedSectionList.InitMemorySectionList(MemoryHelper.GetProcessMaps(processInfo.pid));
                 List<MappedSection> sectionList = mappedSectionList.GetMappedSectionList(section_name, section_prot);
 
                 if (sectionList.Count != 1)
@@ -102,8 +102,8 @@ namespace PS4_Cheater
         public const uint SECTION_EXECUTABLE = 0x5;
 
         public const uint MAJOR_VERSION = 1;
-        public const uint SECONDARY_VERSION = 4;
-        public const uint THIRD_VERSION = 5;
+        public const uint SECONDARY_VERSION = 5;
+        public const uint THIRD_VERSION = 0;
 
         public const string EXACT_VALUE = "Exact Value";
         public const string FUZZY_VALUE = "Fuzzy Value";

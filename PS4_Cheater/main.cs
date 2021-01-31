@@ -1,6 +1,6 @@
 ﻿namespace PS4_Cheater
 {
-    using librpc;
+    using libdebug;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -34,11 +34,11 @@
         private const int RESULT_LIST_VALUE = 2;
         private const int RESULT_LIST_SECTION = 4;
 
-        private const int VERSION_LIST_405 = 2;
-        private const int VERSION_LIST_455 = 1;
-        private const int VERSION_LIST_505 = 0;
+        private const int VERSION_LIST_702 = 0;
+        private const int VERSION_LIST_672 = 1;
+        private const int VERSION_LIST_505 = 2;
 
-        private const int VERSION_LIST_DEFAULT = VERSION_LIST_505;
+        private const int VERSION_LIST_DEFAULT = VERSION_LIST_702;
 
         private string[] SEARCH_BY_FLOAT_FIRST = new string[]
         {
@@ -105,24 +105,24 @@
 
             string version = Config.getSetting("ps4 version");
             string ip = Config.getSetting("ip");
-			if (version == "5.05")
+            if (version == "7.02")
+            {
+                version_list.SelectedIndex = VERSION_LIST_702;
+                Util.Version = 702;
+            }
+            else if (version == "6.72")
+            {
+                version_list.SelectedIndex = VERSION_LIST_672;
+                Util.Version = 672;
+            }
+            else if (version == "5.05")
             {
                 version_list.SelectedIndex = VERSION_LIST_505;
                 Util.Version = 505;
             }
-            else if (version == "4.05")
-            {
-                version_list.SelectedIndex = VERSION_LIST_405;
-                Util.Version = 405;
-            }
-            else if (version == "4.55")
-            {
-                Util.Version = 455;
-                version_list.SelectedIndex = VERSION_LIST_455;
-            }
             else
             {
-                Util.Version = 505;
+                Util.Version = 702;
                 version_list.SelectedIndex = VERSION_LIST_DEFAULT;
             }
 
@@ -144,13 +144,13 @@
             string version = "";
             switch (version_list.SelectedIndex)
             {
-                case VERSION_LIST_405:
-                    version = "4.05";
+                case VERSION_LIST_702:
+                    version = "7.02";
                     break;
-                case VERSION_LIST_455:
-                    version = "4.55";
+                case VERSION_LIST_672:
+                    version = "6.72";
                     break;
-				case VERSION_LIST_505:
+                case VERSION_LIST_505:
                     version = "5.05";
                     break;
                 default:
@@ -878,7 +878,8 @@
 
                 ProcessInfo processInfo = processManager.GetProcessInfo(processes_comboBox.Text);
                 Util.DefaultProcessID = processInfo.pid;
-                processManager.MappedSectionList.InitMemorySectionList(processInfo);
+                ProcessMap pmap = MemoryHelper.GetProcessMaps(processInfo.pid);
+                processManager.MappedSectionList.InitMemorySectionList(pmap);
 
                 section_list_box.BeginUpdate();
                 for (int i = 0; i < processManager.MappedSectionList.Count; ++i)
@@ -898,7 +899,7 @@
             try
             {
 				
-                MemoryHelper.Connect(ip_box.Text,(Util.Version == 505));
+                MemoryHelper.Connect(ip_box.Text);
 
                 this.processes_comboBox.Items.Clear();
                 ProcessList pl = MemoryHelper.GetProcessList();
@@ -930,26 +931,23 @@
                 string patch_path = Application.StartupPath;
                 switch (version_list.SelectedIndex)
                 {
-                    case VERSION_LIST_405:
-                        patch_path += @"\4.05\";
+                    case VERSION_LIST_702:
+                        patch_path += @"\payloads\7.02\";
                         break;
-                    case VERSION_LIST_455:
-                        patch_path += @"\4.55\";
+                    case VERSION_LIST_672:
+                        patch_path += @"\payloads\6.72\";
                         break;
-					case VERSION_LIST_505:
-                        patch_path += @"\5.05\";
+                    case VERSION_LIST_505:
+                        patch_path += @"\payloads\5.05\";
                         break;
                     default:
                         throw new System.ArgumentException("Unknown version.");
                 }
 
-                this.send_pay_load(this.ip_box.Text, patch_path + @"payload.bin", Convert.ToInt32(this.port_box.Text));
+                this.send_pay_load(this.ip_box.Text, patch_path + @"ps4debug.bin", Convert.ToInt32(this.port_box.Text));
                 Thread.Sleep(1000);
-                this.msg.Text = "Injecting kpayload.elf...";
-                this.send_pay_load(this.ip_box.Text, patch_path + @"kpayload.elf", 9023);
-                Thread.Sleep(2500);
                 this.msg.ForeColor = Color.Green;
-                this.msg.Text = "Payload injected successfully!";
+                this.msg.Text = "ps4debug.bin injected successfully!";
             }
             catch (Exception exception)
             {
@@ -1208,17 +1206,16 @@
         {
             switch (version_list.SelectedIndex)
             {
-                case VERSION_LIST_405:
-                    Util.Version = 405;
-					
+                case VERSION_LIST_702:
+                    Util.Version = 702;
                     break;
-                case VERSION_LIST_455:
-                    Util.Version = 455;
-					
+
+                case VERSION_LIST_672:
+                    Util.Version = 672;
                     break;
-				case VERSION_LIST_505:
+
+                case VERSION_LIST_505:
                     Util.Version = 505;
-					
                     break;
             }
         }
