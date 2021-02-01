@@ -12,10 +12,18 @@ This is a work in progress.
 
 ## Building
 
-Open `PS4_Cheater.sln` with Compile with Visual Studio and build.
+Open `PS4_Cheater.sln` with Visual Studio and build.
 
-**Note:** `payloads` directory will be copied to the `debug`/`release` directory as a post build step.
+**Note:**
+- `payloads` directory will be copied to the `debug`/`release` directory as a post-build step.
+- If using `ps4debug` `payloads` directory on its own, be sure to grab `libdebug.dll`.
+  - Need both for the speedfix.
 
+
+## Acknowledgements & Thanks!
+- Countless contributors to `jkpatch`, `ps4-ksdk`, `ps4-payload-sdk`, `ps4debug` and `PS4_Cheater`.
+- [DeathRGH](https://github.com/DeathRGH) for the speedfix tweak for ps4debug.
+- [Al-Azif](https://github.com/Al-Azif) for his [ps4-exploit-host](https://github.com/Al-Azif/ps4-exploit-host) - Very useful for local testing.
 
 ---
 Discord chat site: https://discord.gg/PwBwUKf.
