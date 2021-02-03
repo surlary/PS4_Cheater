@@ -191,7 +191,7 @@ namespace PS4_Cheater
             }
             return "";
         }
-        public static bool updateSeeting(string key, string newValue)
+        public static bool updateSetting(string key, string newValue)
         {
             try
             {

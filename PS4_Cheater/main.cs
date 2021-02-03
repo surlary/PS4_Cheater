@@ -104,6 +104,7 @@
             valueTypeList.SelectedIndex = 2;
 
             string version = Config.getSetting("ps4 version");
+            string port = Config.getSetting("port");
             string ip = Config.getSetting("ip");
             if (version == "7.02")
             {
@@ -129,6 +130,11 @@
             if (!string.IsNullOrEmpty(ip))
             {
                 ip_box.Text = ip;
+            }
+
+            if (!string.IsNullOrEmpty(port))
+            {
+                port_box.Text = port;
             }
 
             this.next_scan_btn.Text = CONSTANT.NEXT_SCAN;
@@ -159,12 +165,17 @@
 
             if (!string.IsNullOrWhiteSpace(version))
             {
-                Config.updateSeeting("ps4 version", version);
+                Config.updateSetting("ps4 version", version);
             }
 
             if (!string.IsNullOrWhiteSpace(ip_box.Text))
             {
-                Config.updateSeeting("ip", ip_box.Text);
+                Config.updateSetting("ip", ip_box.Text);
+            }
+
+            if (!string.IsNullOrWhiteSpace(port_box.Text))
+            {
+                Config.updateSetting("port", port_box.Text);
             }
 
             //MemoryHelper.Disconnect();
