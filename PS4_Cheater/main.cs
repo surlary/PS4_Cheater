@@ -887,10 +887,23 @@
                 compareTypeList.Enabled = true;
                 section_list_box.Enabled = true;
 
-                ProcessInfo processInfo = processManager.GetProcessInfo(processes_comboBox.Text);
+                ProcessInfo? maybeProcessInfo = processManager.GetProcessInfo(processes_comboBox.Text);
+                if (maybeProcessInfo is null)
+                {
+                    msg.Text = "No process information found.";
+                    return;
+                }
+                ProcessInfo processInfo = (ProcessInfo)maybeProcessInfo;
+
                 Util.DefaultProcessID = processInfo.pid;
-                ProcessMap pmap = MemoryHelper.GetProcessMaps(processInfo.pid);
-                processManager.MappedSectionList.InitMemorySectionList(pmap);
+                ProcessMap processMap = MemoryHelper.GetProcessMaps(processInfo.pid);
+                if (processMap is null)
+                {
+                    msg.Text = "No process maps found.";
+                    return;
+                }
+
+                processManager.MappedSectionList.InitMemorySectionList(processMap);
 
                 section_list_box.BeginUpdate();
                 for (int i = 0; i < processManager.MappedSectionList.Count; ++i)

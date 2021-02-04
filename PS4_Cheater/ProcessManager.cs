@@ -335,15 +335,15 @@ namespace PS4_Cheater
                 middle = (low + high) / 2;
                 if (address >= mapped_section_list[middle].Start + (ulong)(mapped_section_list[middle].Length))
                 {
-                    low = middle + 1;   //查找数组后部分  
+                    low = middle + 1;   // Search last half of the array
                 }
                 else if (address < mapped_section_list[middle].Start)
                 {
-                    high = middle - 1;  //查找数组前半部分  
+                    high = middle - 1;  // Search first half of the array
                 }
                 else
                 {
-                    return middle;  //找到用户要查找的数字，返回下标  
+                    return middle;  // Found, returning index
                 }
             }
 
@@ -516,10 +516,10 @@ namespace PS4_Cheater
             MappedSectionList = new MappedSectionList();
         }
 
-        public ProcessInfo GetProcessInfo(string process_name)
+        public ProcessInfo? GetProcessInfo(string process_name)
         {
             ProcessList processList = MemoryHelper.GetProcessList();
-            ProcessInfo processInfo = new ProcessInfo();
+            ProcessInfo? processInfo = null;
             foreach (Process process in processList.processes)
             {
                 if (process.name == process_name)

@@ -169,7 +169,7 @@ namespace PS4_Cheater
             return null;
         }
 
-        public static ProcessInfo GetProcessInfo(int processID)
+        public static ProcessInfo? GetProcessInfo(int processID)
         {
             mutex.WaitOne();
             try
@@ -181,8 +181,7 @@ namespace PS4_Cheater
             catch
             {
                 mutex.ReleaseMutex();
-                ProcessInfo info = new ProcessInfo();
-                return info;
+                return null;
             }
         }
         

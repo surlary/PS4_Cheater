@@ -71,11 +71,18 @@ namespace PS4_Cheater
             try
             {
                 ProcessManager processManager = new ProcessManager();
-                ProcessInfo processInfo = processManager.GetProcessInfo(process_name);
+                ProcessInfo? maybeProcessInfo = processManager.GetProcessInfo(process_name);
+                if (maybeProcessInfo is null)
+                    return;
+                ProcessInfo processInfo = (ProcessInfo)maybeProcessInfo;
 
                 MemoryHelper memoryHelper = new MemoryHelper(false, processInfo.pid);
                 MappedSectionList mappedSectionList = processManager.MappedSectionList;
-                mappedSectionList.InitMemorySectionList(MemoryHelper.GetProcessMaps(processInfo.pid));
+                ProcessMap processMap = MemoryHelper.GetProcessMaps(processInfo.pid);
+                if (processMap is null)
+                    return;
+
+                mappedSectionList.InitMemorySectionList(processMap);
                 List<MappedSection> sectionList = mappedSectionList.GetMappedSectionList(section_name, section_prot);
 
                 if (sectionList.Count != 1)
