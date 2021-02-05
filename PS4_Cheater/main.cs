@@ -13,12 +13,14 @@
     using System.Windows.Forms;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
 
     public partial class main : Form
     {
         private ProcessManager processManager = new ProcessManager();
         private MemoryHelper memoryHelper = new MemoryHelper(true, 0);
         private CheatList cheatList = new CheatList();
+        private static long processed_memory_len = 0;
 
         private const int CHEAT_LIST_DEL = 0;
         private const int CHEAT_LIST_ADDRESS = 1;
@@ -389,7 +391,7 @@
             }
             msg.Text = ret.Results + " results";
         }
-        
+
 
         private void scan_worker_DoWorker(object sender, DoWorkEventArgs e, bool isFirstScan)
         {
@@ -436,42 +438,81 @@
 
         private void next_scan_worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            long processed_memory_len = 0;
+            processed_memory_len = 0;
             ulong total_memory_size = processManager.MappedSectionList.TotalMemorySize + 1;
             string value_0 = value_box.Text;
             string value_1 = value_1_box.Text;
             next_scan_worker.ReportProgress(0);
-            for (int section_idx = 0; section_idx < processManager.MappedSectionList.Count; ++section_idx)
-            {
-                if (next_scan_worker.CancellationPending) break;
-                MappedSection mappedSection = processManager.MappedSectionList[section_idx];
-                mappedSection.UpdateResultList(processManager, memoryHelper, value_0, value_1, hex_box.Checked, false);
-                if (mappedSection.Check) processed_memory_len += mappedSection.Length;
-                next_scan_worker.ReportProgress((int)(((float)processed_memory_len / total_memory_size) * 80));
-            }
+
+            int thread_id = 0;
+            int num_threads = MemoryHelper.num_threads;
+            Task[] readTasks = new Task[num_threads];
+
+            for (int i = 0; i < num_threads; i++)
+                readTasks[i] = new Task(() => next_scan_thread(value_0, value_1, thread_id++, num_threads, ref processed_memory_len, total_memory_size));
+
+            foreach (var readTask in readTasks)
+                readTask.Start();
+
+            Task.WaitAll(readTasks);
+
             next_scan_worker.ReportProgress(80);
 
             update_result_list_view(next_scan_worker, false, 80, 0.2f);
         }
 
+        void next_scan_thread(string value_0, string value_1, int thread_id, int num_threads, ref long processed_memory_len, ulong total_memory_size)
+        {
+            for (int section_idx = 0; section_idx < processManager.MappedSectionList.Count; ++section_idx)
+            {
+                // Split work up between threads.
+                if (section_idx % num_threads != thread_id) continue;
+
+                if (next_scan_worker.CancellationPending) break;
+                MappedSection mappedSection = processManager.MappedSectionList[section_idx];
+                mappedSection.UpdateResultList(processManager, memoryHelper, value_0, value_1, hex_box.Checked, false, thread_id);
+                if (mappedSection.Check) processed_memory_len += mappedSection.Length;
+                next_scan_worker.ReportProgress((int)(((float)processed_memory_len / total_memory_size) * 80));
+            }
+        }
+
         private void new_scan_worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            //scan_worker_DoWorker(sender, e, true);
-            long processed_memory_len = 0;
+            processed_memory_len = 0;
             ulong total_memory_size = processManager.MappedSectionList.TotalMemorySize + 1;
             string value_0 = value_box.Text;
             string value_1 = value_1_box.Text;
             new_scan_worker.ReportProgress(0);
+
+            int thread_id = 0;
+            int num_threads = MemoryHelper.num_threads;
+            Task[] readTasks = new Task[num_threads];
+
+            for (int i = 0; i < num_threads; i++)
+                readTasks[i] = new Task(() => new_scan_thread(value_0, value_1, thread_id++, num_threads, ref processed_memory_len, total_memory_size));
+
+            foreach (var readTask in readTasks)
+                readTask.Start();
+
+            Task.WaitAll(readTasks);
+
+            new_scan_worker.ReportProgress(80);
+            update_result_list_view(new_scan_worker, false, 80, 0.2f);
+        }
+
+        void new_scan_thread(string value_0, string value_1, int thread_id, int num_threads, ref long processed_memory_len, ulong total_memory_size)
+        {
             for (int section_idx = 0; section_idx < processManager.MappedSectionList.Count; ++section_idx)
             {
+                // Split work up between threads.
+                if (section_idx % num_threads != thread_id) continue;
+
                 if (new_scan_worker.CancellationPending) break;
                 MappedSection mappedSection = processManager.MappedSectionList[section_idx];
-                mappedSection.UpdateResultList(processManager, memoryHelper, value_0, value_1, hex_box.Checked, true);
+                mappedSection.UpdateResultList(processManager, memoryHelper, value_0, value_1, hex_box.Checked, true, thread_id);
                 if (mappedSection.Check) processed_memory_len += mappedSection.Length;
                 new_scan_worker.ReportProgress((int)(((float)processed_memory_len / total_memory_size) * 80));
             }
-            new_scan_worker.ReportProgress(80);
-            update_result_list_view(new_scan_worker, false, 80, 0.2f);
         }
 
         private void update_result_list_worker_DoWork(object sender, DoWorkEventArgs e)
@@ -486,7 +527,7 @@
                 msg.Text = "Peeking memory...";
             }
 
-            if (e.ProgressPercentage == 50)
+            if (e.ProgressPercentage == 80)
             {
                 msg.Text = "Analysing memory...";
             }
@@ -917,12 +958,12 @@
                 MessageBox.Show(exception.Message);
             }
         }
-		
+
         private void get_processes_btn_Click(object sender, EventArgs e)
         {
             try
             {
-				
+
                 MemoryHelper.Connect(ip_box.Text);
 
                 this.processes_comboBox.Items.Clear();

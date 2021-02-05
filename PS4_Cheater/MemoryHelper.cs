@@ -44,11 +44,15 @@ namespace PS4_Cheater
 
     public class MemoryHelper
     {
-        public static PS4DBG ps4 = null;
-        private static Mutex mutex;
+        public static int num_threads = 3;
+        public static PS4DBG[] ps4 = new PS4DBG[num_threads];
+        private static Mutex[] mutex = new Mutex[num_threads];
+
         private int SelfProcessID;
-        private int ProcessID {
-            get {
+        private int ProcessID
+        {
+            get
+            {
                 if (DefaultProcessID)
                     return Util.DefaultProcessID;
                 return SelfProcessID;
@@ -58,7 +62,8 @@ namespace PS4_Cheater
 
         static MemoryHelper()
         {
-            mutex = new Mutex();
+            for (int i = 0; i < num_threads; i++)
+                mutex[i] = new Mutex();
         }
 
         public MemoryHelper(bool defaultProcessID, int processID)
@@ -71,15 +76,20 @@ namespace PS4_Cheater
         {
             try
             {
-                mutex.WaitOne();
-                ps4 = new PS4DBG(ip);
-                ps4.Connect();
-                mutex.ReleaseMutex();
+                for (int i = 0; i < num_threads; i++)
+                {
+                    mutex[i].WaitOne();
+                    ps4[i] = new PS4DBG(ip);
+                    ps4[i].Connect();
+                    mutex[i].ReleaseMutex();
+                }
+
                 return true;
             }
             catch
             {
-                mutex.ReleaseMutex();
+                for (int i = 0; i < num_threads; i++)
+                    mutex[i].ReleaseMutex();
             }
             return false;
         }
@@ -89,17 +99,22 @@ namespace PS4_Cheater
 
             try
             {
-                mutex.WaitOne();
-                if (ps4 != null)
+                for (int i = 0; i < num_threads; i++)
                 {
-                    ps4.Disconnect();
+                    mutex[i].WaitOne();
+                    if (ps4[i] != null)
+                    {
+                        ps4[i].Disconnect();
+                    }
+                    mutex[i].ReleaseMutex();
                 }
-                mutex.ReleaseMutex();
+
                 return true;
             }
             catch
             {
-                mutex.ReleaseMutex();
+                for (int i = 0; i < num_threads; i++)
+                    mutex[i].ReleaseMutex();
             }
             return false;
         }
@@ -107,7 +122,7 @@ namespace PS4_Cheater
         public delegate string BytesToStringHandler(Byte[] value);
         public delegate Byte[] StringToBytesHandler(string value);
         public delegate bool ComparatorHandler(Byte[] default_value_0, Byte[] default_value_1, Byte[] old_value, Byte[] new_value);
-        
+
         public BytesToStringHandler BytesToString { get; set; }
         public BytesToStringHandler BytesToHexString { get; set; }
         public StringToBytesHandler StringToBytes { get; set; }
@@ -123,80 +138,80 @@ namespace PS4_Cheater
         public bool ParseFirstValue { get; set; }
         public bool ParseSecondValue { get; set; }
 
-        public byte[] ReadMemory(ulong address, int length)
+        public byte[] ReadMemory(ulong address, int length, int thread_id = 0)
         {
-            mutex.WaitOne();
+            mutex[thread_id].WaitOne();
             try
             {
-                byte[] buf = ps4.ReadMemory(ProcessID, address, length);
-                mutex.ReleaseMutex();
+                byte[] buf = ps4[thread_id].ReadMemory(ProcessID, address, length);
+                mutex[thread_id].ReleaseMutex();
                 return buf;
             }
             catch
             {
-                mutex.ReleaseMutex();
+                mutex[thread_id].ReleaseMutex();
             }
             return new byte[length];
         }
 
         public void WriteMemory(ulong address, byte[] data)
         {
-            mutex.WaitOne();
+            mutex[0].WaitOne();
             try
             {
-                ps4.WriteMemory(ProcessID, address, data);
-                mutex.ReleaseMutex();
+                ps4[0].WriteMemory(ProcessID, address, data);
+                mutex[0].ReleaseMutex();
             }
             catch
             {
-                mutex.ReleaseMutex();
+                mutex[0].ReleaseMutex();
             }
         }
 
         public static ProcessList GetProcessList()
         {
-            mutex.WaitOne();
+            mutex[0].WaitOne();
             try
             {
-                ProcessList processList = ps4.GetProcessList();
-                mutex.ReleaseMutex();
+                ProcessList processList = ps4[0].GetProcessList();
+                mutex[0].ReleaseMutex();
                 return processList;
             }
             catch
             {
-                mutex.ReleaseMutex();
+                mutex[0].ReleaseMutex();
             }
             return null;
         }
 
         public static ProcessInfo? GetProcessInfo(int processID)
         {
-            mutex.WaitOne();
+            mutex[0].WaitOne();
             try
             {
-                ProcessInfo processInfo = ps4.GetProcessInfo(processID);
-                mutex.ReleaseMutex();
+                ProcessInfo processInfo = ps4[0].GetProcessInfo(processID);
+                mutex[0].ReleaseMutex();
                 return processInfo;
             }
             catch
             {
-                mutex.ReleaseMutex();
+                mutex[0].ReleaseMutex();
                 return null;
             }
         }
-        
+
         public static ProcessMap GetProcessMaps(int processID)
         {
-            mutex.WaitOne();
+            mutex[0].WaitOne();
             try
             {
-                ProcessMap processMap = ps4.GetProcessMaps(processID);
-                mutex.ReleaseMutex();
+                ProcessMap processMap = ps4[0].GetProcessMaps(processID);
+                mutex[0].ReleaseMutex();
                 return processMap;
             }
             catch
             {
-                mutex.ReleaseMutex();
+                mutex[0].ReleaseMutex();
                 return null;
             }
         }

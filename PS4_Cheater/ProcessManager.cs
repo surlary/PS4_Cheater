@@ -202,7 +202,7 @@ namespace PS4_Cheater
         }
 
         public void UpdateResultList(ProcessManager processManager, MemoryHelper memoryHelper,
-            string default_value_0_str, string default_value_1_str, bool is_hex, bool newScan)
+            string default_value_0_str, string default_value_1_str, bool is_hex, bool newScan, int thread_id)
         {
             if (!Check)
             {
@@ -232,7 +232,7 @@ namespace PS4_Cheater
                     length -= cur_length;
                 }
 
-                byte[] buffer = memoryHelper.ReadMemory(address, (int)cur_length);
+                byte[] buffer = memoryHelper.ReadMemory(address, (int)cur_length, thread_id);
 
                 byte[] default_value_0 = null;
                 if (memoryHelper.ParseFirstValue)
