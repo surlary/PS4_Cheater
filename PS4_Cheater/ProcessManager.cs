@@ -216,7 +216,7 @@ namespace PS4_Cheater
             uint base_address = 0;
             int length = this.Length;
 
-            const int buffer_length = 1024 * 1024 * 128;
+            const int buffer_length = 1024 * 1024 * 64;
 
             while (length != 0)
             {
@@ -280,7 +280,7 @@ namespace PS4_Cheater
             ulong address = this.Start;
             int length = this.Length;
 
-            const int buffer_length = 1024 * 1024 * 128;
+            const int buffer_length = 1024 * 1024 * 64;
 
             while (length != 0)
             {
@@ -440,7 +440,7 @@ namespace PS4_Cheater
                     ulong start = entry.start;
                     string name = entry.name;
                     int idx = 0;
-                    ulong buffer_length = 1024 * 1024 * 128;
+                    ulong buffer_length = 1024 * 1024 * 64;
 
                     //Executable section
                     if ((entry.prot & 0x5) == 0x5)
