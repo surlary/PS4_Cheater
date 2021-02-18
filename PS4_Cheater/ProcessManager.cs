@@ -269,6 +269,9 @@ namespace PS4_Cheater
                     memoryHelper.CompareWithMemoryBufferNextScanner(default_value_0, default_value_1, buffer, ResultList, new_result_list);
                 }
 
+                buffer = null;
+                MemoryHelper.GC();
+
                 address += (ulong)cur_length;
                 base_address += (uint)cur_length;
             }
@@ -299,6 +302,9 @@ namespace PS4_Cheater
                 byte[] buffer = memoryHelper.ReadMemory(address, (int)cur_length);
 
                 memoryHelper.CompareWithMemoryBufferPointerScanner(processManager, buffer, pointerList, address);
+
+                buffer = null;
+                MemoryHelper.GC();
 
                 address += (ulong)cur_length;
             }

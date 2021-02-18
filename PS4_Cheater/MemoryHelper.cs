@@ -104,6 +104,14 @@ namespace PS4_Cheater
             return false;
         }
 
+        public static void GC()
+        {
+            Console.WriteLine("Before GC: " + (System.GC.GetTotalMemory(true) / 1024 / 1024) + " MB " + DateTime.Now.TimeOfDay);
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            Console.WriteLine("After GC: " + (System.GC.GetTotalMemory(true) / 1024 / 1024) + " MB " + DateTime.Now.TimeOfDay);
+        }
+
         public delegate string BytesToStringHandler(Byte[] value);
         public delegate Byte[] StringToBytesHandler(string value);
         public delegate bool ComparatorHandler(Byte[] default_value_0, Byte[] default_value_1, Byte[] old_value, Byte[] new_value);

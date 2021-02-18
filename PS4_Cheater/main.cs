@@ -38,7 +38,7 @@
         private const int VERSION_LIST_672 = 1;
         private const int VERSION_LIST_505 = 2;
 
-        private const int VERSION_LIST_DEFAULT = VERSION_LIST_702;
+        private const int VERSION_LIST_DEFAULT = VERSION_LIST_505;
 
         private string[] SEARCH_BY_FLOAT_FIRST = new string[]
         {
@@ -123,8 +123,8 @@
             }
             else
             {
-                Util.Version = 702;
-                version_list.SelectedIndex = VERSION_LIST_DEFAULT;
+                Util.Version = 505;
+                version_list.SelectedIndex = VERSION_LIST_505;
             }
 
             if (!string.IsNullOrEmpty(ip))
@@ -535,6 +535,10 @@
                     FileStream myStream = new FileStream(save_file_dialog.FileName, FileMode.OpenOrCreate);
                     myStream.Write(buffer, 0, buffer.Length);
                     myStream.Close();
+                    myStream.Dispose();
+
+                    buffer = null;
+                    MemoryHelper.GC();
                 }
             }
         }
@@ -943,13 +947,13 @@
                 switch (version_list.SelectedIndex)
                 {
                     case VERSION_LIST_702:
-                        patch_path += @"\payloads\7.02\";
+                        patch_path += @"/payloads/\7.02/";
                         break;
                     case VERSION_LIST_672:
-                        patch_path += @"\payloads\6.72\";
+                        patch_path += @"/payloads/6.72/";
                         break;
                     case VERSION_LIST_505:
-                        patch_path += @"\payloads\5.05\";
+                        patch_path += @"/payloads/5.05/";
                         break;
                     default:
                         throw new System.ArgumentException("Unknown version.");

@@ -169,6 +169,6 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y /e /i "$(ProjectDir)payloads"  "$(TargetDir)payloads"</PostBuildEvent>
+    <PostBuildEvent>echo xcopy /y /e /i "$(ProjectDir)payloads"  "$(TargetDir)payloads"</PostBuildEvent>
   </PropertyGroup>
 </Project>
