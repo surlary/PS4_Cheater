@@ -187,6 +187,7 @@ namespace PS4_Cheater
 
     public class MappedSection
     {
+        private delegate byte[] Reader(ulong address, int length);
         public ulong Start { get; set; }
         public int Length { get; set; }
         public string Name { get; set; }
@@ -211,12 +212,15 @@ namespace PS4_Cheater
             }
 
             ResultList new_result_list = new ResultList(memoryHelper.Length, memoryHelper.Alignment);
+            Reader reader = new Reader(memoryHelper.ReadMemory);
 
             ulong address = this.Start;
             uint base_address = 0;
             int length = this.Length;
 
             const int buffer_length = 1024 * 1024 * 64;
+            IAsyncResult result = null;
+            byte[] buffer = null;
 
             while (length != 0)
             {
@@ -232,7 +236,19 @@ namespace PS4_Cheater
                     length -= cur_length;
                 }
 
-                byte[] buffer = memoryHelper.ReadMemory(address, (int)cur_length);
+                if(result == null)
+                {
+                    result = reader.BeginInvoke(address, cur_length, null, null);
+                }
+
+                buffer = reader.EndInvoke(result);
+
+                address += (ulong)cur_length;
+
+                if (length > 0)
+                {
+                    result = reader.BeginInvoke(address, buffer_length > length ? length : buffer_length, null, null);
+                }
 
                 byte[] default_value_0 = null;
                 if (memoryHelper.ParseFirstValue)
@@ -272,7 +288,6 @@ namespace PS4_Cheater
                 buffer = null;
                 MemoryHelper.GC();
 
-                address += (ulong)cur_length;
                 base_address += (uint)cur_length;
             }
             ResultList = new_result_list;
