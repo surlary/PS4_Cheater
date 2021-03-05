@@ -69,6 +69,7 @@ namespace PS4_Cheater
 
         public static bool Connect(string ip)
         {
+            Disconnect();
             try
             {
                 mutex.WaitOne();

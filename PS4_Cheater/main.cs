@@ -275,7 +275,7 @@
             {
                 if (new_scan_btn.Text == CONSTANT.FIRST_SCAN)
                 {
-                    if (MessageBox.Show("search size:" + (processManager.MappedSectionList.TotalMemorySize / 1024).ToString() + "KB") != DialogResult.OK)
+                    if (MessageBox.Show("search size:" + (processManager.MappedSectionList.TotalMemorySize / 1024 / 1024).ToString() + "MB") != DialogResult.OK)
                     {
                         return;
                     }
@@ -915,14 +915,31 @@
             {
 				
                 MemoryHelper.Connect(ip_box.Text);
-
+                string selection = this.processes_comboBox.Text;
                 this.processes_comboBox.Items.Clear();
                 ProcessList pl = MemoryHelper.GetProcessList();
-                foreach (Process process in pl.processes)
+                int selectionIdx = 0;
+
+                for (int i = 0; i < pl.processes.Length; i++)
                 {
-                    this.processes_comboBox.Items.Add(process.name);
+                    this.processes_comboBox.Items.Add(pl.processes[i].name);
+
+                    if(String.Empty.Equals(selection, StringComparison.InvariantCultureIgnoreCase) && pl.processes[i].name.Equals("eboot.bin", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        selectionIdx = i;
+                    }
+                    else if(pl.processes[i].name.Equals(selection, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        selectionIdx = i;
+                    }
                 }
-                this.processes_comboBox.SelectedIndex = 0;
+
+                //foreach (Process process in pl.processes)
+                //{
+                //    this.processes_comboBox.Items.Add(process.name);
+                //}
+
+                this.processes_comboBox.SelectedIndex = selectionIdx;
             }
             catch (Exception exception)
             {
