@@ -538,7 +538,7 @@
                     myStream.Dispose();
 
                     buffer = null;
-                    MemoryHelper.GC();
+                    //MemoryHelper.GC();
                 }
             }
         }

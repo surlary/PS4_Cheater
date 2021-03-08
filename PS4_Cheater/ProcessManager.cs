@@ -236,12 +236,18 @@ namespace PS4_Cheater
                     length -= cur_length;
                 }
 
+                //memoryHelper.ReadMemory(address, cur_length);
+
                 if(result == null)
                 {
                     result = reader.BeginInvoke(address, cur_length, null, null);
                 }
 
                 buffer = reader.EndInvoke(result);
+                if(buffer == null)
+                {
+                    continue;
+                }
 
                 address += (ulong)cur_length;
 
@@ -278,7 +284,16 @@ namespace PS4_Cheater
 
                 if (newScan)
                 {
-                    memoryHelper.CompareWithMemoryBufferNewScanner(default_value_0, default_value_1, buffer, new_result_list, base_address);
+                    if (!memoryHelper.ParseSecondValue && memoryHelper.ParseFirstValue)
+                    {
+                        memoryHelper.BoyerMooreScanner(default_value_0, default_value_1, buffer, new_result_list, base_address);
+                        //Console.WriteLine("boyer");
+                    }
+                    else
+                    {
+                        memoryHelper.CompareWithMemoryBufferNewScanner(default_value_0, default_value_1, buffer, new_result_list, base_address);
+                        //Console.WriteLine("normal");
+                    }
                 }
                 else
                 {
@@ -286,7 +301,7 @@ namespace PS4_Cheater
                 }
 
                 buffer = null;
-                MemoryHelper.GC();
+                //MemoryHelper.GC();
 
                 base_address += (uint)cur_length;
             }
@@ -319,7 +334,7 @@ namespace PS4_Cheater
                 memoryHelper.CompareWithMemoryBufferPointerScanner(processManager, buffer, pointerList, address);
 
                 buffer = null;
-                MemoryHelper.GC();
+                //MemoryHelper.GC();
 
                 address += (ulong)cur_length;
             }

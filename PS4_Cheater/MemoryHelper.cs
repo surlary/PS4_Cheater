@@ -132,8 +132,15 @@ namespace PS4_Cheater
         public bool ParseFirstValue { get; set; }
         public bool ParseSecondValue { get; set; }
 
-        public byte[] ReadMemory(ulong address, int length)
+        public virtual byte[] ReadMemory(ulong address, int length)
         {
+
+            //DateTime time = DateTime.Now;
+            //byte[] fuzz = new byte[length];
+            //new Random().NextBytes(fuzz);
+            //Console.WriteLine((DateTime.Now - time).TotalMilliseconds);
+            //return fuzz;
+
             mutex.WaitOne();
             try
             {
@@ -141,11 +148,13 @@ namespace PS4_Cheater
                 mutex.ReleaseMutex();
                 return buf;
             }
-            catch
+            catch(Exception e)
             {
+                Console.WriteLine("Error occurred when reading memory:\n" + e.Message + "\n" + e.StackTrace);
                 mutex.ReleaseMutex();
             }
-            return new byte[length];
+            //return new byte[length];
+            return null;
         }
 
         public void WriteMemory(ulong address, byte[] data)
@@ -390,6 +399,18 @@ namespace PS4_Cheater
                 {
                     new_result_list.Add((uint)i + base_address, new_value);
                 }
+            }
+        }
+
+        public void BoyerMooreScanner(byte[] default_value_0, byte[] default_value_1, byte[] buffer,
+            ResultList new_result_list, uint base_address)
+        {
+            BoyerMoore bm = new BoyerMoore(default_value_0);
+            List<int> indexList = bm.SearchAll(buffer);
+
+            foreach(int idx in indexList)
+            {
+                new_result_list.Add((uint)idx + base_address, default_value_0);
             }
         }
 
