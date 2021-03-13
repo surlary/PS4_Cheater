@@ -292,7 +292,7 @@ namespace PS4_Cheater
                     else
                     {
                         memoryHelper.CompareWithMemoryBufferNewScanner(default_value_0, default_value_1, buffer, new_result_list, base_address);
-                        //Console.WriteLine("normal");
+                        Console.WriteLine("normal");
                     }
                 }
                 else

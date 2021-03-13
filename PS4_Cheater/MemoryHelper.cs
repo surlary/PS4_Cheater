@@ -108,9 +108,9 @@ namespace PS4_Cheater
         public static void GC()
         {
             Console.WriteLine("Before GC: " + (System.GC.GetTotalMemory(true) / 1024 / 1024) + " MB " + DateTime.Now.TimeOfDay);
-            System.GC.Collect();
-            System.GC.WaitForPendingFinalizers();
-            Console.WriteLine("After GC: " + (System.GC.GetTotalMemory(true) / 1024 / 1024) + " MB " + DateTime.Now.TimeOfDay);
+            //System.GC.Collect();
+            //System.GC.WaitForPendingFinalizers();
+            //Console.WriteLine("After GC: " + (System.GC.GetTotalMemory(true) / 1024 / 1024) + " MB " + DateTime.Now.TimeOfDay);
         }
 
         public delegate string BytesToStringHandler(Byte[] value);
@@ -376,11 +376,19 @@ namespace PS4_Cheater
                 uint address_offset = 0;
                 Byte[] old_value = null;
                 old_result_list.Get(ref address_offset, ref old_value);
-                Buffer.BlockCopy(buffer, (int)address_offset, new_value, 0, length);
-                if (Comparer(default_value_0, default_value_1, old_value, new_value))
-                {
-                    new_result_list.Add(address_offset, new_value);
-                }
+
+				try
+				{
+					Buffer.BlockCopy(buffer, (int)address_offset, new_value, 0, length);
+					if (Comparer(default_value_0, default_value_1, old_value, new_value))
+					{
+						new_result_list.Add(address_offset, new_value);
+					}
+				}
+                catch(Exception e)
+				{
+					Console.WriteLine("{0}, buffer legnth: {1}, address: {2} \n{3}", e.Message, buffer.Length, address_offset, e.StackTrace);
+				}
             }
         }
 

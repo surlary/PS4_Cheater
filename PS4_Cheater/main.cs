@@ -441,12 +441,23 @@
             string value_0 = value_box.Text;
             string value_1 = value_1_box.Text;
             next_scan_worker.ReportProgress(0);
+
             for (int section_idx = 0; section_idx < processManager.MappedSectionList.Count; ++section_idx)
             {
                 if (next_scan_worker.CancellationPending) break;
-                MappedSection mappedSection = processManager.MappedSectionList[section_idx];
-                mappedSection.UpdateResultList(processManager, memoryHelper, value_0, value_1, hex_box.Checked, false);
-                if (mappedSection.Check) processed_memory_len += mappedSection.Length;
+				MappedSection mappedSection = null;
+
+				try
+				{
+					mappedSection = processManager.MappedSectionList[section_idx];
+					mappedSection.UpdateResultList(processManager, memoryHelper, value_0, value_1, hex_box.Checked, false);
+					if (mappedSection.Check) processed_memory_len += mappedSection.Length;
+				}
+				catch (Exception ex)
+                {
+					Console.WriteLine("Error occurred in " + mappedSection.Name + ":" + ex.Message + "\n" + ex.StackTrace);
+                }
+
                 next_scan_worker.ReportProgress((int)(((float)processed_memory_len / total_memory_size) * 80));
             }
             next_scan_worker.ReportProgress(80);
