@@ -6,12 +6,15 @@
 
     internal static class Program
     {
+		public static main instance;
+
         [STAThread]
         private static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new main());
+			instance = new main();
+            Application.Run(instance);
             //test();
             //new TestPS4LIB("").ReadMemory(0, 0, 16);
         }

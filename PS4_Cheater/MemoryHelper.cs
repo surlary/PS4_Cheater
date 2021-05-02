@@ -366,7 +366,7 @@ namespace PS4_Cheater
         }
 
         public void CompareWithMemoryBufferNextScanner(byte[] default_value_0, byte[] default_value_1, byte[] buffer,
-            ResultList old_result_list, ResultList new_result_list)
+            ResultList old_result_list, ResultList new_result_list, uint baseaddress = 0)
         {
             int length = Length;
 
@@ -379,15 +379,19 @@ namespace PS4_Cheater
 
 				try
 				{
-					Buffer.BlockCopy(buffer, (int)address_offset, new_value, 0, length);
-					if (Comparer(default_value_0, default_value_1, old_value, new_value))
+					if (address_offset >= baseaddress && address_offset - baseaddress < buffer.Length)
 					{
-						new_result_list.Add(address_offset, new_value);
+						Console.WriteLine("copy from {0} {1}", address_offset, baseaddress);
+						Buffer.BlockCopy(buffer, (int)(address_offset - baseaddress), new_value, 0, length);
+						if (Comparer(default_value_0, default_value_1, old_value, new_value))
+						{
+							new_result_list.Add(address_offset, new_value);
+						}
 					}
 				}
                 catch(Exception e)
 				{
-					Console.WriteLine("{0}, buffer legnth: {1}, address: {2} \n{3}", e.Message, buffer.Length, address_offset, e.StackTrace);
+					Console.WriteLine("{0}\n{4} buffer legnth: {1}, address: {2} \n{3}", e.Message, buffer.Length, address_offset, e.StackTrace, "");
 				}
             }
         }
@@ -405,6 +409,7 @@ namespace PS4_Cheater
                 Buffer.BlockCopy(buffer, i, new_value, 0, length);
                 if (Comparer(default_value_0, default_value_1, dummy_value, new_value))
                 {
+					Console.WriteLine(i + "+" + base_address);
                     new_result_list.Add((uint)i + base_address, new_value);
                 }
             }
@@ -418,7 +423,8 @@ namespace PS4_Cheater
 
             foreach(int idx in indexList)
             {
-                new_result_list.Add((uint)idx + base_address, default_value_0);
+				Console.WriteLine(idx + "+" + base_address);
+				new_result_list.Add((uint)idx + base_address, default_value_0);
             }
         }
 

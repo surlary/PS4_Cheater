@@ -246,13 +246,16 @@ namespace PS4_Cheater
                 buffer = reader.EndInvoke(result);
                 if(buffer == null)
                 {
-                    continue;
+					Console.WriteLine("error reading");
+					return;
+                    //continue;
                 }
 
                 address += (ulong)cur_length;
 
                 if (length > 0)
                 {
+					Console.WriteLine("read from {0} lemgth {1}", address, buffer_length > length ? length : buffer_length);
                     result = reader.BeginInvoke(address, buffer_length > length ? length : buffer_length, null, null);
                 }
 
@@ -284,8 +287,12 @@ namespace PS4_Cheater
 
                 if (newScan)
                 {
-                    if (!memoryHelper.ParseSecondValue && memoryHelper.ParseFirstValue)
+					Console.WriteLine("base: " + base_address);
+
+                    //if (!memoryHelper.ParseSecondValue && memoryHelper.ParseFirstValue)
+                    if(Program.instance.algorithm.Checked)
                     {
+
                         memoryHelper.BoyerMooreScanner(default_value_0, default_value_1, buffer, new_result_list, base_address);
                         //Console.WriteLine("boyer");
                     }
@@ -297,7 +304,8 @@ namespace PS4_Cheater
                 }
                 else
                 {
-                    memoryHelper.CompareWithMemoryBufferNextScanner(default_value_0, default_value_1, buffer, ResultList, new_result_list);
+					Console.WriteLine(this.Name);
+                    memoryHelper.CompareWithMemoryBufferNextScanner(default_value_0, default_value_1, buffer, ResultList, new_result_list, base_address);
                 }
 
                 buffer = null;
@@ -313,7 +321,7 @@ namespace PS4_Cheater
             ulong address = this.Start;
             int length = this.Length;
 
-            const int buffer_length = 1024 * 1024 * 64;
+            const int buffer_length = 1024 * 1024 * 128;
 
             while (length != 0)
             {
@@ -476,7 +484,7 @@ namespace PS4_Cheater
                     ulong start = entry.start;
                     string name = entry.name;
                     int idx = 0;
-                    ulong buffer_length = 1024 * 1024 * 64;
+                    ulong buffer_length = 1024 * 1024 * 128;
 
                     //Executable section
                     if ((entry.prot & 0x5) == 0x5)

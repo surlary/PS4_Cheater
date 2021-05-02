@@ -112,6 +112,7 @@ namespace PS4_Cheater
             this.get_processes_btn = new System.Windows.Forms.Button();
             this.hex_box = new System.Windows.Forms.CheckBox();
             this.alignment_box = new System.Windows.Forms.CheckBox();
+			this.algorithm = new System.Windows.Forms.CheckBox();
             this.value_1_box = new System.Windows.Forms.TextBox();
             this.value_label = new System.Windows.Forms.Label();
             this.and_label = new System.Windows.Forms.Label();
@@ -594,6 +595,7 @@ namespace PS4_Cheater
             this.splitContainer2.Panel2.Controls.Add(this.value_box);
             this.splitContainer2.Panel2.Controls.Add(this.hex_box);
             this.splitContainer2.Panel2.Controls.Add(this.alignment_box);
+			this.splitContainer2.Panel2.Controls.Add(this.algorithm);
             this.splitContainer2.Panel2.Controls.Add(this.value_1_box);
             this.splitContainer2.Panel2.Controls.Add(this.value_label);
             this.splitContainer2.Panel2.Controls.Add(this.and_label);
@@ -731,12 +733,26 @@ namespace PS4_Cheater
             this.alignment_box.AutoSize = true;
             this.alignment_box.Checked = true;
             this.alignment_box.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.alignment_box.Location = new System.Drawing.Point(167, 221);
+            this.alignment_box.Location = new System.Drawing.Point(69, 222);
             this.alignment_box.Name = "alignment_box";
             this.alignment_box.Size = new System.Drawing.Size(78, 16);
             this.alignment_box.TabIndex = 9;
             this.alignment_box.Text = "Alignment";
             this.alignment_box.UseVisualStyleBackColor = true;
+
+
+			this.algorithm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.algorithm.AutoSize = true;
+            this.algorithm.Checked = true;
+            this.algorithm.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.algorithm.Location = new System.Drawing.Point(189, 222);
+            this.algorithm.Name = "algorithm";
+            this.algorithm.Size = new System.Drawing.Size(78, 16);
+            this.algorithm.TabIndex = 90;
+            this.algorithm.Text = "Boyer Moore";
+            this.algorithm.UseVisualStyleBackColor = true;
+
+
             // 
             // value_1_box
             // 
@@ -980,7 +996,8 @@ namespace PS4_Cheater
         private TextBox value_1_box;
         private Label value_label;
         private Label and_label;
-        private CheckBox alignment_box;
+		public CheckBox algorithm;
+		private CheckBox alignment_box;
         private BackgroundWorker update_result_list_worker;
         private DataGridViewButtonColumn cheat_list_view_del;
         private DataGridViewTextBoxColumn cheat_list_view_address;
